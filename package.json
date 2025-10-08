@@ -1,0 +1,15 @@
+{
+  "name": "pubsub-simulator",
+  "version": "1.0.0",
+  "description": "Simulates delivering tests to runners via pubsib for development and testing purposes",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "redis": "^5.8.3"
+  }
+}
