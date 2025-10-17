@@ -10,15 +10,15 @@ function generateShortId(prefix = '') {
  */
 function createScene({ id, name, description, variables, frameIds, timeout, orgId, cronSchedule, enabled }) {
   return {
-    id: id || generateShortId('scene_'),           // string
-    name: name || 'Unnamed Scene',                 // string 
-    description: description || '',                // string
-    variables: variables || {},                    // {key: value, ...}
-    frameIds: frameIds || [],                      // []string
-    timeout: timeout || 300000,                    // number
-    orgId: orgId,                                  // string
-    cronSchedule: cronSchedule || '',              // string - cron schedule format
-    enabled: enabled !== undefined ? enabled : true // boolean - whether scene is enabled
+    id: id || generateShortId('scene_'),
+    name: name || 'Unnamed Scene',
+    description: description || '',
+    variables: variables || {},
+    frameIds: frameIds || [],
+    timeout: timeout || 300000,
+    orgId: orgId,
+    cronSchedule: cronSchedule || '',
+    enabled: enabled !== undefined ? enabled : true
   };
 }
 
@@ -31,31 +31,40 @@ function createJob({ scene, frames }) {
   const runId = `exec_${timestamp}`;
   
   return {
-    jobId,                         // unique job identifier
-    type: "execution",             // job type
-    runId,                         // execution run identifier
-    scene,                         // full scene object
-    frames,                        // array of frames to execute
-    createdAt: new Date().toISOString() // creation timestamp
+    jobId,
+    type: "execution",
+    runId,
+    scene,
+    frames,
+    createdAt: new Date().toISOString()
   };
 }
 
 /**
  * Create a frame object for pubsub
  */
-function createFrame({ id, sceneId, name, method, url, headers, body, extractors, assertions, order, timeout }) {
+function createFrame({ id, sceneId, name, order, timeout, request, extractors, assertions }) {
   return {
-    id: id || generateShortId('frame_'),           // string
-    sceneId: sceneId || '',                        // string
-    name: name || 'Unnamed Frame',                 // string
-    method: method || 'GET',                       // string
-    url: url || '',                                // string
-    headers: headers || { 'Content-Type': 'application/json' }, // {}string
-    body: body || '',                              // string
-    extractors: extractors || [],                  // []{}extractor
-    assertions: assertions || [],                  // []{}assertion
-    order: order || 0,                             // number for execution order
-    timeout: timeout || 15000                      // number (optional frame-specific timeout)
+    id: id || generateShortId('frame_'),
+    sceneId: sceneId || '',
+    name: name || 'Unnamed Frame',
+    order: order || 0,
+    timeout: timeout || 15000,
+    request: request || {},
+    extractors: extractors || [],
+    assertions: assertions || []
+  };
+}
+
+/**
+ * Create a request object
+ */
+function createRequest({ method, url, headers, body }) {
+  return {
+    method: method || 'GET',
+    url: url || '',
+    headers: headers || { 'Content-Type': 'application/json' },
+    body: body || ''
   };
 }
 
@@ -64,9 +73,9 @@ function createFrame({ id, sceneId, name, method, url, headers, body, extractors
  */
 function createExtractor({ name, type, path }) {
   return {
-    name: name,                    // string - variable name
-    type: type || 'json',          // string: json, header
-    path: path || ''               // string - $.token
+    name: name,
+    type: type || 'json',
+    path: path || ''
   };
 }
 
@@ -75,10 +84,10 @@ function createExtractor({ name, type, path }) {
  */
 function createAssertion({ type, expected, path, operator }) {
   return {
-    type: type || 'status',         // string: json, status, header
-    expected: expected || '',       // string: 200, 'success'
-    path: path,                     // string (optional)
-    operator: operator || 'equals'  // string: equals, notEquals, contains, greaterThan, lessThan
+    type: type || 'status',
+    expected: expected || '',
+    path: path,
+    operator: operator || 'equals'
   };
 }
 
@@ -86,6 +95,7 @@ module.exports = {
   createScene,
   createJob,
   createFrame,
+  createRequest,
   createExtractor,
   createAssertion
 };

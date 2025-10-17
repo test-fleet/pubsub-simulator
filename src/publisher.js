@@ -3,6 +3,7 @@ const {
   createScene,
   createJob,
   createFrame,
+  createRequest,
   createExtractor,
   createAssertion
 } = require('./models');
@@ -14,15 +15,22 @@ async function sendTestJob() {
   
   await client.connect();
   
+  // Create request for frame 1
+  const request1 = createRequest({
+    method: 'GET',
+    url: 'https://jsonplaceholder.typicode.com/posts/1',
+    headers: { 'Content-Type': 'application/json', 'X-API-Key': '${API_KEY}' },
+    body: ''
+  });
+  
   // Create frame 1
   const frame1 = createFrame({
     id: 'frame_1',
     sceneId: 'scene_test123',
     name: 'Get Post Details',
-    method: 'GET',
-    url: 'https://jsonplaceholder.typicode.com/posts/1',
-    headers: { 'Content-Type': 'application/json', 'X-API-Key': '${API_KEY}' },
     order: 0,
+    timeout: 15000,
+    request: request1,
     extractors: [
       createExtractor({
         name: 'POST_ID',
@@ -49,15 +57,22 @@ async function sendTestJob() {
     ]
   });
   
+  // Create request for frame 2
+  const request2 = createRequest({
+    method: 'GET',
+    url: 'https://jsonplaceholder.typicode.com/users/${USER_ID}',
+    headers: { 'Content-Type': 'application/json', 'X-API-Key': '${API_KEY}' },
+    body: ''
+  });
+  
   // Create frame 2
   const frame2 = createFrame({
     id: 'frame_2',
     sceneId: 'scene_test123',
     name: 'Get User Details',
-    method: 'GET',
-    url: 'https://jsonplaceholder.typicode.com/users/${USER_ID}',
-    headers: { 'Content-Type': 'application/json', 'X-API-Key': '${API_KEY}' },
     order: 1,
+    timeout: 15000,
+    request: request2,
     extractors: [
       createExtractor({
         name: 'USER_EMAIL',
@@ -80,15 +95,22 @@ async function sendTestJob() {
     ]
   });
   
+  // Create request for frame 3
+  const request3 = createRequest({
+    method: 'GET',
+    url: 'https://jsonplaceholder.typicode.com/posts/${POST_ID}/comments',
+    headers: { 'Content-Type': 'application/json', 'X-API-Key': '${API_KEY}' },
+    body: ''
+  });
+  
   // Create frame 3
   const frame3 = createFrame({
     id: 'frame_3',
     sceneId: 'scene_test123',
     name: 'Get Post Comments',
-    method: 'GET',
-    url: 'https://jsonplaceholder.typicode.com/posts/${POST_ID}/comments',
-    headers: { 'Content-Type': 'application/json', 'X-API-Key': '${API_KEY}' },
     order: 2,
+    timeout: 15000,
+    request: request3,
     assertions: [
       createAssertion({
         type: 'status',
@@ -105,22 +127,22 @@ async function sendTestJob() {
   });
   
   // Create scene with variables
-const scene = createScene({
-  id: 'scene_test123',
-  name: 'API User-Post Flow',
-  description: 'Tests the full user-post-comment flow with variable extraction',
-  variables: {
-    'API_KEY': 'test-api-key-123',
-    'POST_ID': '',
-    'USER_ID': '',
-    'USER_EMAIL': ''
-  },
-  frameIds: ['frame_1', 'frame_2', 'frame_3'],
-  timeout: 300000,
-  orgId: 'org_test456',
-  cronSchedule: '*/30 * * * *',  // Run every 30 minutes
-  enabled: true
-});
+  const scene = createScene({
+    id: 'scene_test123',
+    name: 'API User-Post Flow',
+    description: 'Tests the full user-post-comment flow with variable extraction',
+    variables: {
+      'API_KEY': 'test-api-key-123',
+      'POST_ID': '',
+      'USER_ID': '',
+      'USER_EMAIL': ''
+    },
+    frameIds: ['frame_1', 'frame_2', 'frame_3'],
+    timeout: 300000,
+    orgId: 'org_test456',
+    cronSchedule: '*/30 * * * *',
+    enabled: true
+  });
   
   // Create job with scene and frames
   const job = createJob({
