@@ -38,12 +38,12 @@ async function sendTestJob() {
       createExtractor({
         name: 'POST_ID',
         type: 'json',
-        path: '$.id'
+        source: '$.id'
       }),
       createExtractor({
-        name: 'USER_ID',
-        type: 'json',
-        path: '$.userId'
+        name: 'CONTENT_TYPE',
+        type: 'header',
+        source: 'content-type'
       })
     ],
     assertions: [
@@ -54,7 +54,7 @@ async function sendTestJob() {
       }),
       createAssertion({
         type: 'json',
-        path: '$.title',
+        source: '$.title',
         operator: 'exists'
       })
     ],
@@ -83,7 +83,7 @@ async function sendTestJob() {
       createExtractor({
         name: 'USER_EMAIL',
         type: 'json',
-        path: '$.email'
+        source: '$.email'
       })
     ],
     assertions: [
@@ -94,7 +94,7 @@ async function sendTestJob() {
       }),
       createAssertion({
         type: 'json',
-        path: '$.email',
+        source: '$.email',
         operator: 'contains',
         expected: '@'
       })
@@ -128,7 +128,7 @@ async function sendTestJob() {
       }),
       createAssertion({
         type: 'json',
-        path: '$[0].email',
+        source: '$[0].email',
         operator: 'contains',
         expected: '@'
       })

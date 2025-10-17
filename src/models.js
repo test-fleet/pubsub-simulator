@@ -70,35 +70,36 @@ function createFrame({ id, sceneId, name, order, timeout, request, extractors, a
 /**
  * Create a request object
  */
-function createRequest({ method, url, headers, body }) {
+function createRequest({ method, url, headers, body, timeout }) {
   return {
-    method: method || 'GET',
+    method: method,
     url: url || '',
     headers: headers || { 'Content-Type': 'application/json' },
-    body: body || ''
+    body: body || '',
+    timeout: 15000
   };
 }
 
 /**
  * Create a variable extractor
  */
-function createExtractor({ name, type, path }) {
+function createExtractor({ name, type, source }) {
   return {
     name: name,
-    type: type || 'json',
-    path: path || ''
+    type: type || '',
+    source: source || ''
   };
 }
 
 /**
  * Create an assertion
  */
-function createAssertion({ type, expected, path, operator }) {
+function createAssertion({ type, operator, expected, source}) {
   return {
-    type: type || 'status',
+    type: type,
+    operator: operator || 'equals',
     expected: expected || '',
-    path: path,
-    operator: operator || 'equals'
+    source: source || '',
   };
 }
 
