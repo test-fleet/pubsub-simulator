@@ -1,66 +1,72 @@
-// Create an Extractor
+const crypto = require('crypto');
+
+// Helper function to generate a short random ID
+function generateShortId(prefix = '') {
+  return `${prefix}${crypto.randomBytes(4).toString('hex')}`;
+}
+
+/**
+ * Create a job for Redis pubsub
+ */
+function createJob({ sceneId, orgId, frames, timeout }) {
+  const timestamp = Date.now();
+  const jobId = `job_${timestamp}_${crypto.randomBytes(4).toString('hex')}`;
+  const runId = `exec_${timestamp}`;
+  
+  return {
+    jobId,                         // unique job identifier
+    type: "execution",             // job type
+    runId,                         // execution run identifier
+    sceneId,                       // scene identifier
+    orgId,                         // organization identifier
+    frames,                        // array of frames to execute
+    timeout: timeout || 300000,    // global timeout in ms (default 5min)
+    createdAt: new Date().toISOString() // creation timestamp
+  };
+}
+
+/**
+ * Create a frame object for pubsub
+ */
+function createFrame({ id, method, url, headers, body, extractors, assertions, order }) {
+  return {
+    id: id || generateShortId('frame_'),      // string
+    method: method || 'GET',                  // string
+    url: url || '',                           // string
+    headers: headers || { 'Content-Type': 'application/json' }, // {}string
+    body: body || '',                         // string
+    extractors: extractors || [],             // []{}extractor
+    assertions: assertions || [],             // []{}assertion
+    order: order || 0                         // number for execution order
+  };
+}
+
+/**
+ * Create a variable extractor
+ */
 function createExtractor({ name, type, path }) {
   return {
-    name,      // variable name to store
-    type,      // 'json' or 'header'
-    path       // JSONPath for json, header name for header
+    name: name,                    // string - variable name
+    type: type || 'json',          // string: json, header
+    path: path || ''               // string - $.token
   };
 }
 
-// Create an Assertion
-function createAssertion({ type, operator, path, expected }) {
-  const assertion = {
-    type,      // 'status', 'json', 'header'
-    operator   // 'equals', 'contains', 'exists'
-  };
-  
-  if (path !== undefined) assertion.path = path;
-  if (expected !== undefined) assertion.expected = expected;
-  
-  return assertion;
-}
-
-// Create a Frame
-function createFrame({ id, method, url, headers, body, extractors, assertions }) {
+/**
+ * Create an assertion
+ */
+function createAssertion({ type, expected, path, operator }) {
   return {
-    id: id || `frame_${Date.now()}`,
-    method,
-    url,
-    headers: headers || {},
-    body: body || '',
-    extractors: extractors || [],
-    assertions: assertions || []
-  };
-}
-
-// Create a Scene
-function createScene({ sceneId, orgId, name, frames }) {
-  return {
-    sceneId: sceneId || `scene_${Date.now()}`,
-    orgId,
-    name,
-    frames: frames || []
-  };
-}
-
-// Create a Job
-function createJob(scene, runId) {
-  return {
-    jobId: `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    type: 'execution',
-    runId,
-    sceneId: scene.sceneId,
-    orgId: scene.orgId,
-    frames: scene.frames,
-    timeout: 300000,
-    createdAt: new Date().toISOString()
+    type: type || 'status',         // string: json, status, header
+    expected: expected || '',       // string: 200, 'success'
+    path: path,                     // string (optional)
+    operator: operator || 'equals'  // string: equals, notEquals, contains, greaterThan, lessThan
   };
 }
 
 module.exports = {
-  createExtractor,
-  createAssertion,
+  createJob,
   createFrame,
-  createScene,
-  createJob
+  createExtractor,
+  createAssertion
 };
