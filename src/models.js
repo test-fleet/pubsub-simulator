@@ -8,7 +8,8 @@ function generateShortId(prefix = '') {
 /**
  * Create a scene object
  */
-function createScene({ id, name, description, variables, frameIds, timeout, orgId, cronSchedule, enabled }) {
+function createScene({ id, name, description, variables, frameIds, timeout, orgId, cronSchedule, enabled, createdBy, createdAt, updatedAt }) {
+  const now = new Date().toISOString();
   return {
     id: id || generateShortId('scene_'),
     name: name || 'Unnamed Scene',
@@ -18,17 +19,21 @@ function createScene({ id, name, description, variables, frameIds, timeout, orgI
     timeout: timeout || 300000,
     orgId: orgId,
     cronSchedule: cronSchedule || '',
-    enabled: enabled !== undefined ? enabled : true
+    enabled: enabled !== undefined ? enabled : true,
+    createdBy: createdBy || 'system',
+    createdAt: createdAt || now,
+    updatedAt: updatedAt || now
   };
 }
 
 /**
  * Create a job for Redis pubsub
  */
-function createJob({ scene, frames }) {
+function createJob({ scene, frames, status }) {
   const timestamp = Date.now();
   const jobId = `job_${timestamp}_${crypto.randomBytes(4).toString('hex')}`;
   const runId = `exec_${timestamp}`;
+  const now = new Date().toISOString();
   
   return {
     jobId,
@@ -36,14 +41,17 @@ function createJob({ scene, frames }) {
     runId,
     scene,
     frames,
-    createdAt: new Date().toISOString()
+    status: status || 'pending',
+    startedAt: now,
+    createdAt: now
   };
 }
 
 /**
  * Create a frame object for pubsub
  */
-function createFrame({ id, sceneId, name, order, timeout, request, extractors, assertions }) {
+function createFrame({ id, sceneId, name, order, timeout, request, extractors, assertions, createdBy, createdAt, updatedAt }) {
+  const now = new Date().toISOString();
   return {
     id: id || generateShortId('frame_'),
     sceneId: sceneId || '',
@@ -52,7 +60,10 @@ function createFrame({ id, sceneId, name, order, timeout, request, extractors, a
     timeout: timeout || 15000,
     request: request || {},
     extractors: extractors || [],
-    assertions: assertions || []
+    assertions: assertions || [],
+    createdBy: createdBy || 'system',
+    createdAt: createdAt || now,
+    updatedAt: updatedAt || now
   };
 }
 

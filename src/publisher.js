@@ -15,6 +15,9 @@ async function sendTestJob() {
   
   await client.connect();
   
+  const now = new Date().toISOString();
+  const userId = 'user_12345'; // Example user ID
+  
   // Create request for frame 1
   const request1 = createRequest({
     method: 'GET',
@@ -54,7 +57,10 @@ async function sendTestJob() {
         path: '$.title',
         operator: 'exists'
       })
-    ]
+    ],
+    createdBy: userId,
+    createdAt: now,
+    updatedAt: now
   });
   
   // Create request for frame 2
@@ -92,7 +98,10 @@ async function sendTestJob() {
         operator: 'contains',
         expected: '@'
       })
-    ]
+    ],
+    createdBy: userId,
+    createdAt: now,
+    updatedAt: now
   });
   
   // Create request for frame 3
@@ -123,7 +132,10 @@ async function sendTestJob() {
         operator: 'contains',
         expected: '@'
       })
-    ]
+    ],
+    createdBy: userId,
+    createdAt: now,
+    updatedAt: now
   });
   
   // Create scene with variables
@@ -141,7 +153,10 @@ async function sendTestJob() {
     timeout: 300000,
     orgId: 'org_test456',
     cronSchedule: '*/30 * * * *',
-    enabled: true
+    enabled: true,
+    createdBy: userId,
+    createdAt: now,
+    updatedAt: now
   });
   
   // Create job with scene and frames
