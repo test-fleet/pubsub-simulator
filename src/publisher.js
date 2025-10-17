@@ -105,20 +105,22 @@ async function sendTestJob() {
   });
   
   // Create scene with variables
-  const scene = createScene({
-    id: 'scene_test123',
-    name: 'API User-Post Flow',
-    description: 'Tests the full user-post-comment flow with variable extraction',
-    variables: {
-      'API_KEY': 'test-api-key-123',
-      'POST_ID': '',
-      'USER_ID': '',
-      'USER_EMAIL': ''
-    },
-    frameIds: ['frame_1', 'frame_2', 'frame_3'],
-    timeout: 300000,
-    orgId: 'org_test456'
-  });
+const scene = createScene({
+  id: 'scene_test123',
+  name: 'API User-Post Flow',
+  description: 'Tests the full user-post-comment flow with variable extraction',
+  variables: {
+    'API_KEY': 'test-api-key-123',
+    'POST_ID': '',
+    'USER_ID': '',
+    'USER_EMAIL': ''
+  },
+  frameIds: ['frame_1', 'frame_2', 'frame_3'],
+  timeout: 300000,
+  orgId: 'org_test456',
+  cronSchedule: '*/30 * * * *',  // Run every 30 minutes
+  enabled: true
+});
   
   // Create job with scene and frames
   const job = createJob({

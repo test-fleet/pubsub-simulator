@@ -8,7 +8,7 @@ function generateShortId(prefix = '') {
 /**
  * Create a scene object
  */
-function createScene({ id, name, description, variables, frameIds, timeout, orgId }) {
+function createScene({ id, name, description, variables, frameIds, timeout, orgId, cronSchedule, enabled }) {
   return {
     id: id || generateShortId('scene_'),           // string
     name: name || 'Unnamed Scene',                 // string 
@@ -16,7 +16,9 @@ function createScene({ id, name, description, variables, frameIds, timeout, orgI
     variables: variables || {},                    // {key: value, ...}
     frameIds: frameIds || [],                      // []string
     timeout: timeout || 300000,                    // number
-    orgId: orgId                                   // string
+    orgId: orgId,                                  // string
+    cronSchedule: cronSchedule || '',              // string - cron schedule format
+    enabled: enabled !== undefined ? enabled : true // boolean - whether scene is enabled
   };
 }
 
