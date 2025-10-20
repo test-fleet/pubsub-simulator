@@ -41,6 +41,11 @@ async function sendTestJob() {
         source: '$.id'
       }),
       createExtractor({
+        name: 'USER_ID',
+        type: 'json',
+        source: '$.userId'
+      }),
+      createExtractor({
         name: 'CONTENT_TYPE',
         type: 'header',
         source: 'content-type'
@@ -63,19 +68,30 @@ async function sendTestJob() {
     updatedAt: now
   });
   
-  // Create request for frame 2
+  // Create request for frame 2 with JSON body containing variables
   const request2 = createRequest({
-    method: 'GET',
+    method: 'POST',
     url: 'https://jsonplaceholder.typicode.com/users/${USER_ID}',
-    headers: { 'Content-Type': 'application/json', 'X-API-Key': '${API_KEY}' },
-    body: ''
+    headers: { 
+      'Content-Type': 'application/json', 
+      'X-API-Key': '${API_KEY}'
+    },
+    body: JSON.stringify({
+      name: "Updated User ${USER_ID}",
+      email: "${USER_EMAIL}",
+      api_key: "${API_KEY}",
+      metadata: {
+        lastAccessed: "2023-01-01",
+        postCount: "${POST_ID}"
+      }
+    })
   });
   
   // Create frame 2
   const frame2 = createFrame({
     id: 'frame_2',
     sceneId: 'scene_test123',
-    name: 'Get User Details',
+    name: 'Update User Details',
     order: 1,
     timeout: 15000,
     request: request2,
@@ -94,9 +110,9 @@ async function sendTestJob() {
       }),
       createAssertion({
         type: 'json',
-        source: '$.email',
-        operator: 'contains',
-        expected: '@'
+        source: '$.id',
+        operator: 'equals',
+        expected: '${USER_ID}'
       })
     ],
     createdBy: userId,
@@ -104,19 +120,22 @@ async function sendTestJob() {
     updatedAt: now
   });
   
-  // Create request for frame 3
+  // Create request for frame 3 with form data containing variables
   const request3 = createRequest({
-    method: 'GET',
+    method: 'POST',
     url: 'https://jsonplaceholder.typicode.com/posts/${POST_ID}/comments',
-    headers: { 'Content-Type': 'application/json', 'X-API-Key': '${API_KEY}' },
-    body: ''
+    headers: { 
+      'Content-Type': 'application/x-www-form-urlencoded', 
+      'X-API-Key': '${API_KEY}'
+    },
+    body: 'postId=${POST_ID}&email=${USER_EMAIL}&comment=This is a test comment for post ${POST_ID}'
   });
   
   // Create frame 3
   const frame3 = createFrame({
     id: 'frame_3',
     sceneId: 'scene_test123',
-    name: 'Get Post Comments',
+    name: 'Add Post Comment',
     order: 2,
     timeout: 15000,
     request: request3,
@@ -128,9 +147,8 @@ async function sendTestJob() {
       }),
       createAssertion({
         type: 'json',
-        source: '$[0].email',
-        operator: 'contains',
-        expected: '@'
+        source: '$.id',
+        operator: 'exists'
       })
     ],
     createdBy: userId,
@@ -147,7 +165,7 @@ async function sendTestJob() {
       'API_KEY': 'test-api-key-123',
       'POST_ID': '',
       'USER_ID': '',
-      'USER_EMAIL': ''
+      'USER_EMAIL': 'default@example.com' // Added default value for testing
     },
     frameIds: ['frame_1', 'frame_2', 'frame_3'],
     timeout: 300000,
