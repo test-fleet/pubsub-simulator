@@ -80,14 +80,22 @@ function createRequest({ method, url, headers, body, timeout }) {
   };
 }
 
+function createVariable({ type, value }) {
+  return {
+    type: type || 'string',
+    value: value
+  }
+}
+
 /**
  * Create a variable extractor
  */
-function createExtractor({ name, type, source }) {
+function createExtractor({ name, type, source, dataType }) {
   return {
     name: name,
     type: type || '',
-    source: source || ''
+    source: source || '',
+    dataType: dataType || 'string'
   };
 }
 
@@ -109,5 +117,6 @@ module.exports = {
   createFrame,
   createRequest,
   createExtractor,
-  createAssertion
+  createAssertion,
+  createVariable
 };
