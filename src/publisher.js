@@ -5,7 +5,8 @@ const {
   createFrame,
   createRequest,
   createExtractor,
-  createAssertion
+  createAssertion,
+  createVariable
 } = require('./models');
 
 async function sendTestJob() {
@@ -322,23 +323,23 @@ async function sendTestJob() {
     name: 'Comprehensive API Testing Flow',
     description: 'Tests complete API flow with all variable types: string, number, bool extraction and insertion',
     variables: {
-      'API_KEY': 'test-api-key-123',
-      'REQUEST_ID': 'req_12345',
-      'POST_ID': '',
-      'USER_ID': '',
-      'POST_TITLE': '',
-      'CONTENT_TYPE': '',
-      'SERVER_NAME': '',
-      'USER_EMAIL': '',
-      'USER_PHONE': '',
-      'IS_ACTIVE': true,
-      'LAT_COORDINATE': 0.0,
-      'NEW_POST_ID': '',
-      'RESPONSE_LOCATION': '',
-      'UPDATE_SUCCESS': false,
-      'RESPONSE_TIME': 0,
-      'DELETE_SUCCESS': false,
-      'FINAL_STATUS': ''
+      'API_KEY': createVariable({ type: 'string', value: 'test-api-key-123' }),
+      'REQUEST_ID': createVariable({ type: 'string', value: 'req_12345' }),
+      'POST_ID': createVariable({ type: 'number', value: null }),
+      'USER_ID': createVariable({ type: 'number', value: null }),
+      'POST_TITLE': createVariable({ type: 'string', value: '' }),
+      'CONTENT_TYPE': createVariable({ type: 'string', value: '' }),
+      'SERVER_NAME': createVariable({ type: 'string', value: '' }),
+      'USER_EMAIL': createVariable({ type: 'string', value: '' }),
+      'USER_PHONE': createVariable({ type: 'string', value: '' }),
+      'IS_ACTIVE': createVariable({ type: 'boolean', value: true }),
+      'LAT_COORDINATE': createVariable({ type: 'number', value: 0.0 }),
+      'NEW_POST_ID': createVariable({ type: 'number', value: null }),
+      'RESPONSE_LOCATION': createVariable({ type: 'string', value: '' }),
+      'UPDATE_SUCCESS': createVariable({ type: 'boolean', value: false }),
+      'RESPONSE_TIME': createVariable({ type: 'number', value: 0 }),
+      'DELETE_SUCCESS': createVariable({ type: 'boolean', value: false }),
+      'FINAL_STATUS': createVariable({ type: 'string', value: '' })
     },
     frameIds: ['frame_1', 'frame_2', 'frame_3', 'frame_4', 'frame_5'],
     timeout: 300000,
