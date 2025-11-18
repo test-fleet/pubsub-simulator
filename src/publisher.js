@@ -17,9 +17,8 @@ async function sendTestJob() {
   await client.connect();
   
   const now = new Date().toISOString();
-  const userId = 'user_12345'; // Example user ID
+  const userId = 'user_12345';
   
-  // Frame 1: Basic GET with header and JSON extraction (string, number types)
   const request1 = createRequest({
     method: 'GET',
     url: 'https://jsonplaceholder.typicode.com/posts/1',
@@ -88,7 +87,6 @@ async function sendTestJob() {
     updatedAt: now
   });
 
-  // Frame 2: GET with boolean extraction
   const request2 = createRequest({
     method: 'GET',
     url: 'https://jsonplaceholder.typicode.com/users/${USER_ID}',
@@ -152,7 +150,6 @@ async function sendTestJob() {
     updatedAt: now
   });
 
-  // Frame 3: POST with JSON body using all variable types
   const request3 = createRequest({
     method: 'POST',
     url: 'https://jsonplaceholder.typicode.com/posts',
@@ -216,23 +213,32 @@ async function sendTestJob() {
     updatedAt: now
   });
 
-  // Frame 4: PUT with form data using extracted variables
   const request4 = createRequest({
     method: 'PUT',
     url: 'https://jsonplaceholder.typicode.com/posts/${NEW_POST_ID}',
     headers: { 
-      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/json',
       'X-API-Key': '${API_KEY}',
       'X-Original-Post': '${POST_ID}',
       'X-User-Active': '${IS_ACTIVE}'
     },
-    body: 'id=${NEW_POST_ID}&userId=${USER_ID}&title=Updated: ${POST_TITLE}&email=${USER_EMAIL}&active=${IS_ACTIVE}&latitude=${LAT_COORDINATE}'
+    body: JSON.stringify({
+      id: "${NEW_POST_ID}",
+      userId: "${USER_ID}",
+      title: "Updated: ${POST_TITLE}",
+      body: "Updated by ${USER_EMAIL}",
+      metadata: {
+        phone: "${USER_PHONE}",
+        active: "${IS_ACTIVE}",
+        latitude: "${LAT_COORDINATE}"
+      }
+    })
   });
   
   const frame4 = createFrame({
     id: 'frame_4',
     sceneId: 'scene_test123',
-    name: 'Update Post - Form Data with Variable Insertion',
+    name: 'Update Post - JSON Body with Variable Insertion',
     order: 3,
     timeout: 15000,
     request: request4,
@@ -241,7 +247,7 @@ async function sendTestJob() {
         name: 'UPDATE_SUCCESS',
         type: 'json',
         source: '$.id',
-        dataType: 'boolean'
+        dataType: 'number'
       }),
       createExtractor({
         name: 'RESPONSE_TIME',
@@ -268,7 +274,6 @@ async function sendTestJob() {
     updatedAt: now
   });
 
-  // Frame 5: DELETE with header variables
   const request5 = createRequest({
     method: 'DELETE',
     url: 'https://jsonplaceholder.typicode.com/posts/${NEW_POST_ID}',
@@ -317,7 +322,6 @@ async function sendTestJob() {
     updatedAt: now
   });
   
-  // Create scene with all variables (including default values for initial frame)
   const scene = createScene({
     id: 'scene_test123',
     name: 'Comprehensive API Testing Flow',
@@ -336,7 +340,7 @@ async function sendTestJob() {
       'LAT_COORDINATE': createVariable({ type: 'number', value: 0.0 }),
       'NEW_POST_ID': createVariable({ type: 'number', value: null }),
       'RESPONSE_LOCATION': createVariable({ type: 'string', value: '' }),
-      'UPDATE_SUCCESS': createVariable({ type: 'boolean', value: false }),
+      'UPDATE_SUCCESS': createVariable({ type: 'number', value: 0 }),
       'RESPONSE_TIME': createVariable({ type: 'number', value: 0 }),
       'DELETE_SUCCESS': createVariable({ type: 'boolean', value: false }),
       'FINAL_STATUS': createVariable({ type: 'string', value: '' })
@@ -351,7 +355,6 @@ async function sendTestJob() {
     updatedAt: now
   });
   
-  // Create job with scene and all frames
   const job = createJob({
     scene: scene,
     frames: [frame1, frame2, frame3, frame4, frame5]
@@ -365,7 +368,6 @@ async function sendTestJob() {
   await client.disconnect();
 }
 
-// Run on interval
 const intervalSeconds = parseInt(process.env.INTERVAL_SECONDS || '10');
 console.log(`Starting simulator - will publish every ${intervalSeconds} seconds`);
 setInterval(async () => {
@@ -377,5 +379,4 @@ setInterval(async () => {
   }
 }, intervalSeconds * 1000);
 
-// Also send one immediately on startup
 sendTestJob().catch(console.error);
