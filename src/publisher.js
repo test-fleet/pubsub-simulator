@@ -123,13 +123,13 @@ async function sendTestJob() {
         name: 'IS_ACTIVE',
         type: 'json',
         source: '$.website',
-        dataType: 'boolean'
+        dataType: 'string'
       }),
       createExtractor({
         name: 'LAT_COORDINATE',
         type: 'json',
         source: '$.address.geo.lat',
-        dataType: 'number'
+        dataType: 'string'
       })
     ],
     assertions: [
@@ -215,22 +215,23 @@ async function sendTestJob() {
 
   const request4 = createRequest({
     method: 'PUT',
-    url: 'https://jsonplaceholder.typicode.com/posts/${NEW_POST_ID}',
+    url: 'https://jsonplaceholder.typicode.com/posts/${POST_ID}',
     headers: { 
       'Content-Type': 'application/json',
       'X-API-Key': '${API_KEY}',
-      'X-Original-Post': '${POST_ID}',
+      'X-New-Post-ID': '${NEW_POST_ID}',
       'X-User-Active': '${IS_ACTIVE}'
     },
     body: JSON.stringify({
-      id: "${NEW_POST_ID}",
+      id: "${POST_ID}",
       userId: "${USER_ID}",
       title: "Updated: ${POST_TITLE}",
       body: "Updated by ${USER_EMAIL}",
       metadata: {
         phone: "${USER_PHONE}",
         active: "${IS_ACTIVE}",
-        latitude: "${LAT_COORDINATE}"
+        latitude: "${LAT_COORDINATE}",
+        newPostId: "${NEW_POST_ID}"
       }
     })
   });
@@ -266,7 +267,7 @@ async function sendTestJob() {
         type: 'json',
         source: '$.id',
         operator: 'equals',
-        expected: '${NEW_POST_ID}'
+        expected: '${POST_ID}'
       })
     ],
     createdBy: userId,
@@ -276,14 +277,14 @@ async function sendTestJob() {
 
   const request5 = createRequest({
     method: 'DELETE',
-    url: 'https://jsonplaceholder.typicode.com/posts/${NEW_POST_ID}',
+    url: 'https://jsonplaceholder.typicode.com/posts/${POST_ID}',
     headers: { 
       'Authorization': 'Bearer ${API_KEY}',
       'X-User-ID': '${USER_ID}',
       'X-User-Email': '${USER_EMAIL}',
       'X-Is-Active': '${IS_ACTIVE}',
       'X-Latitude': '${LAT_COORDINATE}',
-      'X-Original-Post-ID': '${POST_ID}',
+      'X-New-Post-ID': '${NEW_POST_ID}',
       'If-Match': '${RESPONSE_LOCATION}'
     },
     body: ''
@@ -336,8 +337,8 @@ async function sendTestJob() {
       'SERVER_NAME': createVariable({ type: 'string', value: '' }),
       'USER_EMAIL': createVariable({ type: 'string', value: '' }),
       'USER_PHONE': createVariable({ type: 'string', value: '' }),
-      'IS_ACTIVE': createVariable({ type: 'boolean', value: true }),
-      'LAT_COORDINATE': createVariable({ type: 'number', value: 0.0 }),
+      'IS_ACTIVE': createVariable({ type: 'string', value: '' }),
+      'LAT_COORDINATE': createVariable({ type: 'string', value: '' }),
       'NEW_POST_ID': createVariable({ type: 'number', value: null }),
       'RESPONSE_LOCATION': createVariable({ type: 'string', value: '' }),
       'UPDATE_SUCCESS': createVariable({ type: 'number', value: 0 }),
